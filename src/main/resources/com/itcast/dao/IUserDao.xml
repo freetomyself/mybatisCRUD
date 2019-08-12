@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.dao.IUserDao">
+    <!--定义resultMap用来实现实体类与数据库字段一一对应-->
+    <resultMap id="userMap" type="com.itcast.domain.User">
+        <id property="userId" column="id"></id>
+        <result property="实体类" column="数据库字段"></result>
+    </resultMap>
+    <!--<select id="findAll" resultType="com.itcast.domain.User">-->
+    <select id="finAll" resultMap="userMap">
+        select * from user ;
+    </select>
+
+    <insert id="inserUser" parameterType="com.itcast.domain.User">
+        <!--配置查询后数据返回-->
+        <selectKey keyProperty="id" keyColumn="id"  order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id();
+        </selectKey>
+        insert into user(username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address});
+    </insert>
+    <update id="updateUserById" parameterType="com.itcast.domain.User">
+        update user set username=#{username},sex=#{sex},address=#{address},birthday=#{birthday} where  id =#{id}
+    </update>
+    <delete id="deleteUser" parameterType="com.itcast.domain.User">
+        delete  from  user where id = #{id} and username=#{username};
+    </delete>
+    <select id="findById" parameterType="int" resultType="com.itcast.domain.User">
+        select * from user where id=#{id} ;
+    </select>
+    <select id="findByName" parameterType="String" resultType="com.itcast.domain.User">
+        select * from user where username like  #{uname};
+        <!-- select * from user where username like '%${value}%' ;-->
+    </select>
+    <!--查询所有用户条数-->
+    <select id="findTotal" resultType="int">
+        select count(id) from user ;
+    </select>
+    <!--根据queryVo查询用户(OGNL表达式user.username user为queryVo中的属性之后通过"点"调用username属性)-->
+    <select id="findUserByVo" parameterType="com.itcast.domain.QueryVo" resultType="com.itcast.domain.User">
+        select * from user where username like #{user.username} ;
+    </select>
+
+</mapper>
